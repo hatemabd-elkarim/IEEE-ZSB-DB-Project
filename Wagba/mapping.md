@@ -118,24 +118,36 @@ To avoid NULL captain_id inside Order, we create a bridge table.
 
 ### Table Structure
 
-## Delivery_Captain
+---
 
-PK captain_id
-name
-vehicle_type
-is_available
+### Delivery_Captain
+| Column       | Key |
+|--------------|-----|
+| captain_id   | PK  |
+| name         |     |
+| vehicle_type |     |
+| is_available |     |
 
-## Order
+---
 
-PK order_id
-ordered_at
-status
+### Order
+| Column     | Key |
+|------------|-----|
+| order_id   | PK  |
+| ordered_at |     | 
+| status     |     |
 
-## Order_Assignment
+---
 
-PK, FK order_id
-FK captain_id
-assigned_at
+### Order_Assignment
+| Column        | Key       |
+|---------------|-----------|
+| order_id      | PK, FK    |
+| captain_id    | FK        |
+| base_pay      |           |
+| bonus         |           |
+| captain_rating|           |
+
 
 ---
 
@@ -160,21 +172,24 @@ No bridge table needed.
 
 ### Table Structure
 
-## Branch
+### Branch
+| Column     | Key |
+|------------|-----|
+| branch_id  | PK  | 
+| location   |     |
+| open_at    |     |
+| close_at   |     |
 
-PK branch_id
-location
-open_at
-close_at
+---
 
-## Item
-
-PK item_id
-name
-price
-is_available
-FK branch_id (NOT NULL)
-
+### Item
+| Column     | Key        |
+|------------|------------|
+| item_id    | PK         |
+| name       |            |
+| price      |            |
+| is_available |          |
+| branch_id  | FK, NOT NULL |
 ---
 
 ## Phase 4: Mapping Binary Relationships (M:N)
