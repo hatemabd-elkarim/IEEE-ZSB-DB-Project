@@ -1,3 +1,5 @@
+create database wagba;
+use wagba;
 create table Customer (
     customer_id int primary key auto_increment,
     name varchar(100) not null,
