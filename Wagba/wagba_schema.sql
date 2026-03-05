@@ -8,7 +8,7 @@ create table Customer (
 ); 
 
 create table Customer_Phone (
-    phone_no varchar(20) primary key,
+    phone_no varchar(20) primary key check (phone_no regexp '^01[0-9]{9}$'),
     customer_id int not null,
     foreign key (customer_id) references Customer(customer_id) on delete cascade
 );
@@ -92,8 +92,8 @@ create table Wallet_Ledger (
 create table Delivery_Pricing_Rule (
     delivery_pricing_id int primary key auto_increment,
     branch_id int not null,
-    start_time datetime not null,
-    end_time datetime not null,
+    start_time time not null,
+    end_time time not null,
     multiplier decimal(4,2) not null check (multiplier >= 1),
     description varchar(200),
     foreign key (branch_id) references Branch(branch_id) on delete cascade,
