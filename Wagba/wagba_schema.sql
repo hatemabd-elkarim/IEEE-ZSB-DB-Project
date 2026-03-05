@@ -1,5 +1,6 @@
 create database wagba;
 use wagba;
+
 create table Customer (
     customer_id int primary key auto_increment,
     name varchar(100) not null,
@@ -22,9 +23,6 @@ create table Address (
     foreign key (customer_id) references Customer(customer_id) on delete cascade
 );
 
-
-
-
 create table Restaurant (
     restaurant_id int primary key auto_increment,
     name varchar(100) not null,
@@ -37,15 +35,16 @@ create table Branch (
     location varchar(200) not null,
     open_time time,
     close_time time,
-    foreign key (restaurant_id) references Restaurant(restaurant_id) on delete cascade
+    foreign key (restaurant_id) references Restaurant(restaurant_id) on delete cascade,
+    check (open_time < close_time) -- check for reliable operating hours
 );
 
 create table Captain (
     captain_id int primary key auto_increment,
     name varchar(100) not null,
-    phone varchar(20) not null,
+    phone varchar(20) not null unique,
     vehicle_type varchar(50),
-    vehicle_plate varchar(20),
+    vehicle_plate varchar(20) unique, 
     status enum('available','busy','inactive') default 'available'
 );
 
@@ -53,7 +52,7 @@ create table `Order` (
     order_id int primary key auto_increment,
     customer_id int not null,
     branch_id int not null,
-    captain_id int null,
+    captain_id int,
     ord_street varchar(100),
     ord_building varchar(50),
     ord_floor varchar(20),
@@ -64,7 +63,8 @@ create table `Order` (
     ordered_at datetime default current_timestamp,
     foreign key (customer_id) references Customer(customer_id),
     foreign key (branch_id) references Branch(branch_id),
-    foreign key (captain_id) references Captain(captain_id)
+    foreign key (captain_id) references Captain(captain_id),
+    check (scheduled_delivery_time is null or scheduled_delivery_time >= ordered_at) -- check for reliable scheduled time
 );
 
 create table Wallet_Ledger (
@@ -93,7 +93,8 @@ create table Delivery_Pricing_Rule (
     end_time time not null,
     multiplier decimal(4,2) not null check (multiplier >= 1),
     description varchar(200),
-    foreign key (branch_id) references Branch(branch_id) on delete cascade
+    foreign key (branch_id) references Branch(branch_id) on delete cascade,
+    check (start_time < end_time) -- check for reliable active hours
 );
 
 
@@ -141,6 +142,7 @@ create table Promo_Usage (
     promo_id int not null,
     customer_id int not null,
     order_id int not null,
+    unique(promo_id, customer_id, order_id), -- prevent user from using the same promo more than once in the same order
     foreign key (promo_id) references Promo_Code(promo_id) on delete cascade,
     foreign key (customer_id) references Customer(customer_id) on delete cascade,
     foreign key (order_id) references `Order`(order_id) on delete cascade
@@ -165,7 +167,7 @@ create table Order_Item_Modifier (
 
 create table Paymentpromo_usage (
     payment_id int primary key auto_increment,
-    order_id int not null,
+    order_id int not null unique,
     payment_type enum('cash','card','wallet') not null,
     status enum('pending','completed','failed') default 'pending',
     amount decimal(10,2) not null check (amount > 0),
@@ -175,7 +177,7 @@ create table Paymentpromo_usage (
 create table Restaurant_Review (
     review_id int primary key auto_increment,
     restaurant_id int not null,
-    order_id int not null,
+    order_id int not null unique,
     rating int check (rating >= 1 and rating <= 5),
     foreign key (restaurant_id) references Restaurant(restaurant_id) on delete cascade,
     foreign key (order_id) references `Order`(order_id) on delete cascade
@@ -201,6 +203,7 @@ create table Captain_Earning (
     captain_id int not null,
     order_id int not null,
     base_pay decimal(10,2) not null check (base_pay >= 0),
+	primary key (captain_id, order_id),
     foreign key (captain_id) references Captain(captain_id),
     foreign key (order_id) references `Order`(order_id)
 );
