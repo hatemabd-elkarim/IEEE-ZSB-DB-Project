@@ -165,7 +165,7 @@ create table Order_Item_Modifier (
     foreign key (modifier_option_id) references Modifier_Option(option_id)
 );
 
-create table Paymentpromo_usage (
+create table Payment (
     payment_id int primary key auto_increment,
     order_id int not null unique,
     payment_type enum('cash','card','wallet') not null,
