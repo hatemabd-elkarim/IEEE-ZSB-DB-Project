@@ -33,8 +33,8 @@ create table Branch (
     branch_id int primary key auto_increment,
     restaurant_id int not null,
     location varchar(200) not null,
-    open_time time,
-    close_time time,
+    open_time datetime,
+    close_time datetime,
     foreign key (restaurant_id) references Restaurant(restaurant_id) on delete cascade,
     check (open_time < close_time) -- check for reliable operating hours
 );
@@ -58,9 +58,10 @@ create table `Order` (
     ord_floor varchar(20),
     ord_gps_coord varchar(100),
     is_donation boolean default false,
-    status enum('pending','preparing','delivering','completed','cancelled') default 'pending',
+    status enum('preparing','completed','out_for_delivery','delivered','cancelled') default 'preparing',
     scheduled_delivery_time datetime null,
     ordered_at datetime default current_timestamp,
+    total_price decimal(10,2) not null check(total_price > 0),
     foreign key (customer_id) references Customer(customer_id),
     foreign key (branch_id) references Branch(branch_id),
     foreign key (captain_id) references Captain(captain_id),
@@ -89,8 +90,8 @@ create table Delivery_Zone (
 create table Delivery_Pricing_Rule (
     delivery_pricing_id int primary key auto_increment,
     branch_id int not null,
-    start_time time not null,
-    end_time time not null,
+    start_time datetime not null,
+    end_time datetime not null,
     multiplier decimal(4,2) not null check (multiplier >= 1),
     description varchar(200),
     foreign key (branch_id) references Branch(branch_id) on delete cascade,
@@ -165,11 +166,11 @@ create table Order_Item_Modifier (
     foreign key (modifier_option_id) references Modifier_Option(option_id)
 );
 
-create table Paymentpromo_usage (
+create table Payment (
     payment_id int primary key auto_increment,
     order_id int not null unique,
     payment_type enum('cash','card','wallet') not null,
-    status enum('pending','completed','failed') default 'pending',
+    status enum('pending','completed','failed', 'refunded') default 'pending',
     amount decimal(10,2) not null check (amount > 0),
     foreign key (order_id) references `Order`(order_id) on delete cascade
 );
@@ -203,6 +204,7 @@ create table Captain_Earning (
     captain_id int not null,
     order_id int not null,
     base_pay decimal(10,2) not null check (base_pay >= 0),
+    bonus decimal(10,2) default 0 check (bonus >= 0),
 	primary key (captain_id, order_id),
     foreign key (captain_id) references Captain(captain_id),
     foreign key (order_id) references `Order`(order_id)

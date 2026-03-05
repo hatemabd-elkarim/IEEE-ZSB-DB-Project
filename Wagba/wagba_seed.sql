@@ -3,13 +3,13 @@ INSERT INTO Restaurant (name,cuisine_type) VALUES
 ('Cairo Bites','Egyptian'),
 ('Pasta Palace','Italian'),
 ('Burger Hub','American');
-
-INSERT INTO Branch (restaurant_id,location,open_time,close_time) VALUES
-(1,'Nasr City','10:00:00','23:59:00'),
-(1,'Maadi','10:00:00','23:59:00'),
-(2,'Zamalek','11:00:00','23:00:00'),
-(2,'Heliopolis','11:00:00','23:00:00'),
-(3,'New Cairo','10:00:00','02:00:00');
+use wagba;
+INSERT INTO Branch (restaurant_id, location, open_time, close_time) VALUES
+(1, 'Nasr City', '2026-03-05 10:00:00', '2026-03-05 23:59:00'),
+(2, 'Zamalek', '2026-03-05 11:00:00', '2026-03-05 23:00:00'),
+(3, 'New Cairo', '2026-03-05 10:00:00', '2026-03-06 02:00:00'), 
+(1, 'Maadi', '2026-03-05 09:30:00', '2026-03-05 22:30:00'),
+(2, 'Heliopolis', '2026-03-05 12:00:00', '2026-03-06 01:00:00');  
 
 INSERT INTO Delivery_Zone (branch_id,zone_name,delivery_fee) VALUES
 (1,'Zone A',20),(1,'Zone B',25),
@@ -43,11 +43,11 @@ INSERT INTO Customer (name,email) VALUES
 INSERT INTO Wallet_Ledger (customer_id,transaction_type,amount)
 SELECT customer_id,'credit',500 FROM Customer;
 
-INSERT INTO Captain (name,phone,vehicle_id,vehicle_plate,status) VALUES
+INSERT INTO Captain (name,phone,vehicle_type,vehicle_plate,status) VALUES
 ('Captain A','0100000001','Bike','ABC111','available'),
 ('Captain B','0100000002','Bike','ABC112','busy'),
 ('Captain C','0100000003','Car','ABC113','available'),
-('Captain D','0100000004','Bike','ABC114','offline'),
+('Captain D','0100000004','Bike','ABC114','inactive'),
 ('Captain E','0100000005','Car','ABC115','available'),
 ('Captain F','0100000006','Bike','ABC116','busy'),
 ('Captain G','0100000007','Car','ABC117','available'),
@@ -74,10 +74,6 @@ INSERT INTO Modifier_Option (group_id,name,price_change) VALUES
 (2,'Medium',0),
 (2,'Large',30);
 
-INSERT INTO Charity_Location (name,street) VALUES
-('Resala','Nasr City'),
-('Orman','Maadi');
-
 INSERT INTO `Order`
 (customer_id,branch_id,captain_id,total_price,status)
 SELECT 
@@ -86,7 +82,7 @@ FLOOR(1 + RAND()*5),
 FLOOR(1 + RAND()*10),
 FLOOR(100 + RAND()*400),
 'delivered'
-FROM dual
+FROM information_schema.tables
 LIMIT 40;
 
 INSERT INTO `Order`
@@ -99,14 +95,15 @@ VALUES
 (5,5,500,'pending','2026-03-12 18:30:00');
 
 INSERT INTO `Order`
-(customer_id,branch_id,charity_location_id,is_donation,total_price,status)
+(customer_id,branch_id,is_donation,total_price,status)
 VALUES
-(6,1,1,TRUE,200,'delivered'),
-(7,2,1,TRUE,150,'delivered'),
-(8,3,2,TRUE,300,'delivered'),
-(9,4,2,TRUE,250,'delivered'),
-(10,5,1,TRUE,400,'delivered');
+(6,1,TRUE,200,'delivered'),
+(7,2,TRUE,150,'delivered'),
+(8,3,TRUE,300,'delivered'),
+(9,4,TRUE,250,'delivered'),
+(10,5,TRUE,400,'delivered');
 
 INSERT INTO Payment (order_id,payment_type,amount,status)
 SELECT order_id,'cash',total_price,'completed'
-FROM `Order`;
+FROM `Order`
+WHERE status = 'delivered';
