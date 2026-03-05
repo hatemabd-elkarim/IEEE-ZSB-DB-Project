@@ -3,8 +3,6 @@
 A comprehensive database system for a food delivery platform, designed and implemented as part of the **IEEE-ZSB Backend Program**.
 
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![MySQL Workbench](https://img.shields.io/badge/MySQL_Workbench-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/products/workbench/)
-[![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 
 ---
 
@@ -132,7 +130,7 @@ A comprehensive database system for a food delivery platform, designed and imple
 
 **Deliverables:**
 
-- Watch our Ramadan Mystery solution and project walkthrough: [Ramadan Mystery - YouTube](https://www.youtube.com/watch?v=1703)
+- Watch our Ramadan Mystery solution and project walkthrough: [Ramadan Mystery - YouTube]([https://www.youtube.com/watch?v=1703](https://youtu.be/jVs4XSG_HEU?si=B0lXReJpOn-3LqmH))
 
 ---
 
@@ -254,3 +252,4 @@ A comprehensive database system for a food delivery platform, designed and imple
    ```
 
 ---
+
