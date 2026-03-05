@@ -48,23 +48,33 @@ create table Captain (
     status enum('available','busy','inactive') default 'available'
 );
 
+create table Delivery_Zone (
+    zone_id int primary key auto_increment,
+    branch_id int not null,
+    zone_name varchar(100) not null,
+    delivery_fee decimal(10,2) not null check (delivery_fee >= 0),
+    foreign key (branch_id) references Branch(branch_id) on delete cascade,
+    unique(branch_id, zone_id)
+);
+
 create table `Order` (
     order_id int primary key auto_increment,
     customer_id int not null,
     branch_id int not null,
     captain_id int,
+    delivery_zone_id int not null,
     ord_street varchar(100),
     ord_building varchar(50),
     ord_floor varchar(20),
     ord_gps_coord varchar(100),
     is_donation boolean default false,
-    status enum('preparing','completed','out_for_delivery','delivered','cancelled') default 'preparing',
+    status enum('pending', 'accepted', 'preparing','completed','out_for_delivery','delivered','cancelled') default 'pending',
     scheduled_delivery_time datetime null,
     ordered_at datetime default current_timestamp,
     total_price decimal(10,2) not null check(total_price > 0),
     foreign key (customer_id) references Customer(customer_id),
-    foreign key (branch_id) references Branch(branch_id),
     foreign key (captain_id) references Captain(captain_id),
+    foreign key (branch_id, delivery_zone_id) references Delivery_Zone(branch_id, zone_id),
     check (scheduled_delivery_time is null or scheduled_delivery_time >= ordered_at) -- check for reliable scheduled time
 );
 
@@ -77,14 +87,6 @@ create table Wallet_Ledger (
     created_at datetime default current_timestamp,
     foreign key (customer_id) references Customer(customer_id) on delete cascade,
     foreign key (ref_order_id) references `Order`(order_id) on delete set null
-);
-
-create table Delivery_Zone (
-    zone_id int primary key auto_increment,
-    branch_id int not null,
-    zone_name varchar(100) not null,
-    delivery_fee decimal(10,2) not null check (delivery_fee >= 0),
-    foreign key (branch_id) references Branch(branch_id) on delete cascade
 );
 
 create table Delivery_Pricing_Rule (

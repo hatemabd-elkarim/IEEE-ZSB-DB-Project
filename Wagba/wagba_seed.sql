@@ -3,7 +3,7 @@ INSERT INTO Restaurant (name,cuisine_type) VALUES
 ('Cairo Bites','Egyptian'),
 ('Pasta Palace','Italian'),
 ('Burger Hub','American');
-use wagba;
+
 INSERT INTO Branch (restaurant_id, location, open_time, close_time) VALUES
 (1, 'Nasr City', '2026-03-05 10:00:00', '2026-03-05 23:59:00'),
 (2, 'Zamalek', '2026-03-05 11:00:00', '2026-03-05 23:00:00'),
@@ -74,34 +74,39 @@ INSERT INTO Modifier_Option (group_id,name,price_change) VALUES
 (2,'Medium',0),
 (2,'Large',30);
 
-INSERT INTO `Order`
-(customer_id,branch_id,captain_id,total_price,status)
+INSERT INTO `Order` (customer_id, branch_id, captain_id, delivery_zone_id, total_price, status)
 SELECT 
-FLOOR(1 + RAND()*20),
-FLOOR(1 + RAND()*5),
-FLOOR(1 + RAND()*10),
-FLOOR(100 + RAND()*400),
-'delivered'
-FROM information_schema.tables
+    FLOOR(1 + RAND()*20),  
+    b.branch_id,            
+    FLOOR(1 + RAND()*10), 
+    (
+        SELECT dz.zone_id
+        FROM Delivery_Zone dz
+        WHERE dz.branch_id = b.branch_id
+        ORDER BY RAND()
+        LIMIT 1
+    ) AS delivery_zone_id,  
+    FLOOR(100 + RAND()*400),  
+    'delivered'       
+FROM Branch b
+ORDER BY RAND()
 LIMIT 40;
 
-INSERT INTO `Order`
-(customer_id,branch_id,total_price,status,scheduled_delivery_time)
+INSERT INTO `Order` (customer_id, branch_id, delivery_zone_id, total_price, status, scheduled_delivery_time)
 VALUES
-(1,1,300,'pending','2026-03-10 18:30:00'),
-(2,2,250,'pending','2026-03-10 18:35:00'),
-(3,3,400,'pending','2026-03-11 18:30:00'),
-(4,4,350,'pending','2026-03-11 18:40:00'),
-(5,5,500,'pending','2026-03-12 18:30:00');
+(1, 1, 1, 300, 'pending', '2026-03-10 18:30:00'),  
+(2, 2, 3, 250, 'pending', '2026-03-10 18:35:00'), 
+(3, 3, 4, 400, 'pending', '2026-03-11 18:30:00'),  
+(4, 4, 5, 350, 'pending', '2026-03-11 18:40:00'), 
+(5, 5, 6, 500, 'pending', '2026-03-12 18:30:00'); 
 
-INSERT INTO `Order`
-(customer_id,branch_id,is_donation,total_price,status)
+INSERT INTO `Order` (customer_id, branch_id, delivery_zone_id, is_donation, total_price, status)
 VALUES
-(6,1,TRUE,200,'delivered'),
-(7,2,TRUE,150,'delivered'),
-(8,3,TRUE,300,'delivered'),
-(9,4,TRUE,250,'delivered'),
-(10,5,TRUE,400,'delivered');
+(6, 1, 2, TRUE, 200, 'delivered'), 
+(7, 2, 3, TRUE, 150, 'delivered'),
+(8, 3, 4, TRUE, 300, 'delivered'),
+(9, 4, 5, TRUE, 250, 'delivered'), 
+(10, 5, 6, TRUE, 400, 'delivered');
 
 INSERT INTO Payment (order_id,payment_type,amount,status)
 SELECT order_id,'cash',total_price,'completed'
