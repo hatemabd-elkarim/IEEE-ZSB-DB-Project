@@ -1,6 +1,6 @@
 use wagba;
 
--- Calculate total revenue, average rating, and total orders for each restaurant
+-- 1. Calculate total revenue, average rating, and total orders for each restaurant
 SELECT
     r.name AS Restaurant_name,
     SUM(o.total_price) AS total_revenue,
@@ -19,9 +19,9 @@ ORDER BY
     total_revenue DESC,
     average_rating DESC,
     total_orders DESC;
-
-use wagba;
--- Identify top customers based on total spending and their last order date
+    
+-- -----------------------------------------------------------------------------------------
+-- 2. Identify top customers based on total spending and their last order date
 SELECT
     c.customer_id AS ID,
     c.name AS Name,
@@ -39,8 +39,8 @@ GROUP BY
 ORDER BY Total_spent DESC
 LIMIT 10;
 
-use wagba;
--- Calculate total earnings and average rating for each busy captain
+-- -----------------------------------------------------------------------------------------
+-- 3. Calculate total earnings and average rating for each busy captain
 SELECT
     c.captain_id,
     c.name AS captain_name,
@@ -64,25 +64,10 @@ WHERE
     c.status = 'busy'
 ORDER BY
     Total_Earnings DESC,
-    Captain_rating DESC
-
--- Top 5 Customer by total spent
-SELECT
-    c.customer_id,
-    name AS customer_name,
-    COUNT(o.order_id) AS total_orders,
-    SUM(o.total_price) AS total_spent
-FROM Customer c
-    JOIN `Order` o ON c.customer_id = o.customer_id
-WHERE
-    o.status = 'delivered'
-GROUP BY
-    c.customer_id,
-    name
-ORDER BY total_spent DESC
-LIMIT 5;
-
--- Calculate total quantity sold total revenue generated, Shows which items sell best per restaurant
+    Captain_rating DESC;
+    
+-- -----------------------------------------------------------------------------------------
+-- 4. Calculate total quantity sold, total revenue generated for top 3 items sell best per restaurant
 SELECT *
 FROM (
         SELECT
@@ -105,7 +90,7 @@ FROM (
 WHERE
     rank_in_restaurant <= 3;
 
--- calculates deliveries_completed , average_rating, total_order_value
+-- 5. calculates for top captains: deliveries_completed , average_rating, total_order_value
 SELECT
     c.captain_id,
     c.name AS captain_name,
