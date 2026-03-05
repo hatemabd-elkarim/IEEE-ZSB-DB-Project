@@ -1,6 +1,6 @@
 use wagba;
 
--- Calculate total revenue, average rating, and total orders for each restaurant
+-- 1. Calculate total revenue, average rating, and total orders for each restaurant
 SELECT
     r.name AS Restaurant_name,
     SUM(o.total_price) AS total_revenue,
@@ -19,9 +19,9 @@ ORDER BY
     total_revenue DESC,
     average_rating DESC,
     total_orders DESC;
-
-use wagba;
--- Identify top customers based on total spending and their last order date
+    
+-- -----------------------------------------------------------------------------------------
+-- 2. Identify top customers based on total spending and their last order date
 SELECT
     c.customer_id AS ID,
     c.name AS Name,
@@ -39,8 +39,8 @@ GROUP BY
 ORDER BY Total_spent DESC
 LIMIT 10;
 
-use wagba;
--- Calculate total earnings and average rating for each busy captain
+-- -----------------------------------------------------------------------------------------
+-- 3. Calculate total earnings and average rating for each busy captain
 SELECT
     c.captain_id,
     c.name AS captain_name,
@@ -64,25 +64,10 @@ WHERE
     c.status = 'busy'
 ORDER BY
     Total_Earnings DESC,
-    Captain_rating DESC
-
--- Top 5 Customer by total spent
-SELECT
-    c.customer_id,
-    name AS customer_name,
-    COUNT(o.order_id) AS total_orders,
-    SUM(o.total_price) AS total_spent
-FROM Customer c
-    JOIN `Order` o ON c.customer_id = o.customer_id
-WHERE
-    o.status = 'delivered'
-GROUP BY
-    c.customer_id,
-    name
-ORDER BY total_spent DESC
-LIMIT 5;
-
--- Calculate total quantity sold total revenue generated, Shows which items sell best per restaurant
+    Captain_rating DESC;
+    
+-- -----------------------------------------------------------------------------------------
+-- 4. Calculate total quantity sold, total revenue generated for top 3 items sell best per restaurant
 SELECT *
 FROM (
         SELECT
@@ -104,8 +89,9 @@ FROM (
     ) ranked_items
 WHERE
     rank_in_restaurant <= 3;
-
--- calculates deliveries_completed , average_rating, total_order_value
+    
+-- -----------------------------------------------------------------------------------------
+-- 5. calculates for top captains: deliveries_completed , average_rating, total_order_value
 SELECT
     c.captain_id,
     c.name AS captain_name,
@@ -127,9 +113,9 @@ ORDER BY
     average_rating DESC,
     deliveries_completed DESC;
 
--- FEATURE: Logistics Gap Analysis - Generate a report of all potential branch-to-zone pairings 
+-- -----------------------------------------------------------------------------------------
+-- 6. FEATURE: Logistics Gap Analysis - Generate a report of all potential branch-to-zone pairings 
 -- to identify neighborhoods (zones) where specific branches do not yet offer delivery.
-use wagba;
 SELECT 
     R.name AS restaurant_name, 
     B.location AS branch_address, 
@@ -150,7 +136,7 @@ ORDER BY R.name, All_Zones.zone_name;
 
 
 
---  FEATURE: Customer Profile Dashboard - Get a full summary of a customer's profile, 
+--  7. FEATURE: Customer Profile Dashboard - Get a full summary of a customer's profile, 
 -- including all registered phone numbers and their primary delivery addresses.
 SELECT c.name, c.email, GROUP_CONCAT(DISTINCT cp.phone_no) AS contact_numbers, COUNT(a.address_id) AS saved_addresses
 FROM Customer c
@@ -159,12 +145,9 @@ LEFT JOIN Address a ON c.customer_id = a.customer_id
 GROUP BY c.customer_id;
 
 
-
-
-
--- Identifies if a restaurant (e.g., McDonald's) charges different fees for "Maadi" 
+-- 8. Identifies number of branches for each restaurant, its delivery fees details
 SELECT 
-    r.cuisine_type,
+    r.name,
     COUNT(DISTINCT b.branch_id) AS total_branches,
     MIN(dz.delivery_fee) AS cheapest_delivery,
     MAX(dz.delivery_fee) AS priciest_delivery,
@@ -172,5 +155,5 @@ SELECT
 FROM Restaurant r
 JOIN Branch b ON r.restaurant_id = b.restaurant_id
 JOIN Delivery_Zone dz ON b.branch_id = dz.branch_id
-GROUP BY r.cuisine_type
+GROUP BY r.name
 ORDER BY average_delivery_cost DESC;
