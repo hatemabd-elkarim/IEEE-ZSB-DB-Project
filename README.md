@@ -130,7 +130,7 @@ A comprehensive database system for a food delivery platform, designed and imple
 
 **Deliverables:**
 
-- Watch our Ramadan Mystery solution and project walkthrough: [Ramadan Mystery - YouTube]([https://www.youtube.com/watch?v=1703](https://youtu.be/jVs4XSG_HEU?si=B0lXReJpOn-3LqmH))
+- Watch our Ramadan Mystery solution and project walkthrough: [Ramadan Mystery - YouTube](https://www.youtube.com/watch?v=1703](https://youtu.be/jVs4XSG_HEU?si=B0lXReJpOn-3LqmH)
 
 ---
 
@@ -252,4 +252,5 @@ A comprehensive database system for a food delivery platform, designed and imple
    ```
 
 ---
+
 
