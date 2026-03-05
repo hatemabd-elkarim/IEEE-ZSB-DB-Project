@@ -58,3 +58,62 @@ LEFT JOIN (
 ) r ON c.captain_id = r.captain_id 
 WHERE c.status = 'busy'
 ORDER BY Total_Earnings DESC , Captain_rating DESC 
+
+
+-- Top 5 Customer by total spent
+SELECT 
+    c.customer_id,
+    name AS customer_name,
+    COUNT(o.order_id) AS total_orders,
+    SUM(o.total_price) AS total_spent
+FROM Customer c
+JOIN `Order` o 
+    ON c.customer_id = o.customer_id
+WHERE o.status = 'delivered'
+GROUP BY c.customer_id, name
+ORDER BY total_spent DESC
+LIMIT 5;
+
+
+
+-- Calculate total quantity sold total revenue generated, Shows which items sell best per restaurant
+SELECT *
+FROM (
+    SELECT 
+        r.name AS restaurant_name,
+        i.name AS item_name,
+        SUM(oi.quantity) AS total_quantity_sold,
+        SUM(oi.quantity * i.price) AS revenue,
+        RANK() OVER (PARTITION BY r.restaurant_id 
+                     ORDER BY SUM(oi.quantity * i.price) DESC) AS rank_in_restaurant
+    FROM Restaurant r
+    JOIN Branch b 
+        ON r.restaurant_id = b.restaurant_id
+    JOIN Item i 
+        ON b.branch_id = i.branch_id
+    JOIN Order_Items oi 
+        ON i.item_id = oi.item_id
+    JOIN `Order` o 
+        ON oi.order_id = o.order_id
+    WHERE o.status = 'delivered'
+    GROUP BY r.restaurant_id, r.name, i.name
+) ranked_items
+WHERE rank_in_restaurant <= 3;
+
+
+-- calculates deliveries_completed , average_rating, total_order_value
+SELECT 
+    c.captain_id,
+    c.name AS captain_name,
+    COUNT(o.order_id) AS deliveries_completed,
+    AVG(cr.rating) AS average_rating,
+    SUM(o.total_price) AS total_order_value
+FROM Captain c
+LEFT JOIN `Order` o
+    ON c.captain_id = o.captain_id
+LEFT JOIN Captain_Review cr
+    ON c.captain_id = cr.captain_id
+WHERE o.status = 'delivered'
+GROUP BY c.captain_id, c.name
+HAVING deliveries_completed >= 5
+ORDER BY average_rating DESC, deliveries_completed DESC;
