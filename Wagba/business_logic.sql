@@ -126,3 +126,51 @@ HAVING
 ORDER BY
     average_rating DESC,
     deliveries_completed DESC;
+
+-- FEATURE: Logistics Gap Analysis - Generate a report of all potential branch-to-zone pairings 
+-- to identify neighborhoods (zones) where specific branches do not yet offer delivery.
+use wagba;
+SELECT 
+    R.name AS restaurant_name, 
+    B.location AS branch_address, 
+    All_Zones.zone_name AS potential_zone,
+    CASE 
+        WHEN DZ.zone_id IS NULL THEN 'No Coverage' 
+        ELSE 'Active' 
+    END AS service_status
+FROM Branch B
+JOIN Restaurant R ON B.restaurant_id = R.restaurant_id
+CROSS JOIN (
+    SELECT DISTINCT zone_name 
+    FROM Delivery_Zone
+) AS All_Zones
+LEFT JOIN Delivery_Zone DZ ON B.branch_id = DZ.branch_id 
+    AND All_Zones.zone_name = DZ.zone_name
+ORDER BY R.name, All_Zones.zone_name;
+
+
+
+--  FEATURE: Customer Profile Dashboard - Get a full summary of a customer's profile, 
+-- including all registered phone numbers and their primary delivery addresses.
+SELECT c.name, c.email, GROUP_CONCAT(DISTINCT cp.phone_no) AS contact_numbers, COUNT(a.address_id) AS saved_addresses
+FROM Customer c
+LEFT JOIN Customer_Phone cp ON c.customer_id = cp.customer_id
+LEFT JOIN Address a ON c.customer_id = a.customer_id
+GROUP BY c.customer_id;
+
+
+
+
+
+-- Identifies if a restaurant (e.g., McDonald's) charges different fees for "Maadi" 
+SELECT 
+    r.cuisine_type,
+    COUNT(DISTINCT b.branch_id) AS total_branches,
+    MIN(dz.delivery_fee) AS cheapest_delivery,
+    MAX(dz.delivery_fee) AS priciest_delivery,
+    AVG(dz.delivery_fee) AS average_delivery_cost
+FROM Restaurant r
+JOIN Branch b ON r.restaurant_id = b.restaurant_id
+JOIN Delivery_Zone dz ON b.branch_id = dz.branch_id
+GROUP BY r.cuisine_type
+ORDER BY average_delivery_cost DESC;
